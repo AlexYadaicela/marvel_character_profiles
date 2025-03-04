@@ -1,37 +1,54 @@
 import './style.css';
-import javascriptLogo from './javascript.svg';
-import viteLogo from '/vite.svg';
-import { setupCounter } from './counter.js';
+const characterContainer = document.getElementById('display_characters'); 
 
 
-document.querySelector('#app').innerHTML = `
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-      <img src="${javascriptLogo}" class="logo vanilla" alt="JavaScript logo" />
-    </a>
-    <h1>Hello Vite!</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite logo to learn more
-    </p>
-  </div>
-`
+
+
 async function getMarvelCharacters(){
     try{
         const response = await fetch('/api/marvel/characters'); 
         if(!response.ok){
             throw new Error(`Response status: ${response.status}`); 
         }
-        const characters = await response.json();  
-        console.log(characters.data.results); 
+        const data = await response.json();  
+        const characters = data.data.results;
+        console.log(characters);  
+        displayCharacters(characters);   
     }catch(error){
         console.error(error.message); 
     }
 }
+
+function displayCharacters(characters){
+  const fragment = document.createDocumentFragment(); 
+
+  characters.forEach((character) => {
+    const imgElement = document.createElement('img'); 
+    const imgContainer = document.createElement('div');
+    const imgInformation = document.createElement('div'); 
+    const spanElement = document.createElement('span'); 
+
+    
+    imgContainer.classList.add('img_container'); 
+    imgInformation.classList.add('img_information'); 
+    spanElement.classList.add('character_name'); 
+
+    spanElement.textContent = character.name;  
+
+    
+    const tumbnail = `${character.thumbnail.path}.${character.thumbnail.extension}`; 
+    
+    imgElement.src = tumbnail; 
+    imgElement.alt = character.name; 
+
+    imgInformation.appendChild(spanElement); 
+    imgContainer.appendChild(imgElement);
+    imgContainer.appendChild(imgInformation); 
+
+    fragment.appendChild(imgContainer);
+  });
+
+  characterContainer.appendChild(fragment); 
+}
 getMarvelCharacters(); 
-setupCounter(document.querySelector('#counter'))
+
