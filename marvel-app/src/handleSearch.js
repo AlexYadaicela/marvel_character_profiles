@@ -8,16 +8,23 @@ export async function setUpSearchBar(keyword){
             throw new Error(`Response status:${response.status} `); 
         }
         const res = await response.json(); 
-        const characters = res.data.results; 
+        const characters = res.data.results;  
 
         const fragment = document.createDocumentFragment(); 
         const ulElement = document.createElement('ul'); 
-        characters.forEach((character) => {
-            const liElement = document.createElement('li'); 
-            liElement.textContent = character.name;  
 
+        if(characters.length >= 1){
+            characters.forEach((character) => {
+                const liElement = document.createElement('li'); 
+                liElement.textContent = character.name;  
+    
+                ulElement.appendChild(liElement); 
+            });
+        }else{
+            const liElement = document.createElement('li'); 
+            liElement.textContent = 'No results found'; 
             ulElement.appendChild(liElement); 
-        });
+        }
 
         fragment.appendChild(ulElement); 
         searchResults.appendChild(fragment); 
